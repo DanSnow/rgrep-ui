@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import api from 'lib/api';
 
 let initialState = Immutable.fromJS({
-  result: {},
+  result: [],
   query: {}
 });
 
@@ -19,26 +19,22 @@ export const clearQuery = createAction(CLEAR_QUERY);
 
 export const query = (queryOpts) => {
   return (dispatch, getState) => {
-    const { rgrep } = getState();
     const opts = Object.assign({page: 1}, queryOpts);
-    const page = opts.page;
-    if (!rgrep.hasIn(['result', page.toString()])) {
-      api({
-        path: 'search',
-        methods: 'GET',
-        params: opts
-      })
-      .entity()
-      .then((result) => {
-        dispatch(setResult({ result }));
-      })
-      .catch((error) => {
-        console.warn(error);
-        if (error instanceof Error) {
-          throw error;
-        }
-      });
-    }
+    api({
+      path: 'search',
+      methods: 'GET',
+      params: opts
+    })
+    .entity()
+    .then((result) => {
+      dispatch(setResult({ result }));
+    })
+    .catch((error) => {
+      console.warn(error);
+      if (error instanceof Error) {
+        throw error;
+      }
+    });
   };
 };
 

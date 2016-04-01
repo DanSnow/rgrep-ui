@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import Radium from 'radium';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { autobind } from 'core-decorators';
 
 import Paper from 'material-ui/lib/paper';
@@ -8,6 +9,7 @@ import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import TextField from 'material-ui/lib/text-field';
 import FlatButton from 'material-ui/lib/flat-button';
+import Checkbox from 'material-ui/lib/checkbox';
 
 import { actions as rgrepActions } from 'redux/modules/rgrep';
 
@@ -16,7 +18,8 @@ export class HomeView extends Component {
   constructor(...args) {
     super(...args);
     this.state = {
-      query: ''
+      query: '',
+      insensitive: false
     };
   }
 
@@ -26,8 +29,22 @@ export class HomeView extends Component {
   }
 
   @autobind
+  handleInsensitive(event) {
+    let { insensitive } = this.state;
+    this.setState({ insensitive: !insensitive });
+  }
+
+  @autobind
   handleSearch() {
-    this.props.query({ query: this.state.query });
+    let { query, insensitive } = this.state;
+    let queryOpt = { query };
+    if (insensitive) {
+      Object.assign(queryOpt, { insensitive: null });
+    }
+    this.props.push({
+      pathname: '/result',
+      query: queryOpt
+    });
   }
 
   render() {
@@ -47,6 +64,10 @@ export class HomeView extends Component {
                 <FlatButton onTouchTap={ this.handleSearch } primary>
                   Search
                 </FlatButton>
+                <Checkbox
+                  checked={ this.state.insensitive }
+                  label='insensitive'
+                  onCheck={ this.handleInsensitive } />
               </CardActions>
             </Card>
           </Paper>
@@ -59,12 +80,12 @@ export class HomeView extends Component {
 
 HomeView.propTypes = {
   rgrep: PropTypes.object.isRequired,
-  query: PropTypes.func.isRequired
+  push: PropTypes.func.isRequired
 };
 
 export default connect((state) => {
   return { rgrep: state.rgrep };
-}, rgrepActions)(HomeView);
+}, Object.assign({}, rgrepActions, { push }))(HomeView);
 
 const styles = {
   container: {
