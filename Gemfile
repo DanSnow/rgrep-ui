@@ -34,7 +34,7 @@ gem 'sinatra'
 
 gem 'rails-api'
 
-gem 'rgrep', path: '../ruby-rgrep/rgrep'
+gem 'rgrep', path: '../ruby-rgrep'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
